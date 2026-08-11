@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signupSchema, type SignupInput } from "@/lib/validations/auth";
 import { signupAction } from "@/app/actions/auth";
+import { PasswordInput } from "@/components/ui/PasswordInput";
 import { MailCheck, Check, Loader2 } from "lucide-react";
 
 export default function SignupPage() {
@@ -140,11 +141,9 @@ export default function SignupPage() {
 
           <div style={{ marginBottom: 16 }}>
             <label className="label" htmlFor="signup-password">Senha</label>
-            <input
+            <PasswordInput
               id="signup-password"
-              type="password"
               autoComplete="new-password"
-              className="input"
               placeholder="••••••••"
               {...register("password")}
               aria-invalid={!!errors.password}
@@ -163,11 +162,9 @@ export default function SignupPage() {
 
           <div style={{ marginBottom: 20 }}>
             <label className="label" htmlFor="signup-confirm">Confirmar senha</label>
-            <input
+            <PasswordInput
               id="signup-confirm"
-              type="password"
               autoComplete="new-password"
-              className="input"
               placeholder="••••••••"
               {...register("confirmPassword")}
               aria-invalid={!!errors.confirmPassword}

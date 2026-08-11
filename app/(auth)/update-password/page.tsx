@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { updatePasswordSchema, type UpdatePasswordInput } from "@/lib/validations/auth";
 import { updatePasswordAction } from "@/app/actions/auth";
+import { PasswordInput } from "@/components/ui/PasswordInput";
 
 export default function UpdatePasswordPage() {
   const [serverError, setServerError] = useState<string | null>(null);
@@ -44,11 +45,9 @@ export default function UpdatePasswordPage() {
       <form onSubmit={handleSubmit(onSubmit)} noValidate>
         <div style={{ marginBottom: 16 }}>
           <label className="label" htmlFor="update-password">Nova senha</label>
-          <input
+          <PasswordInput
             id="update-password"
-            type="password"
             autoComplete="new-password"
-            className="input"
             placeholder="••••••••"
             {...register("password")}
             aria-invalid={!!errors.password}
@@ -58,11 +57,9 @@ export default function UpdatePasswordPage() {
 
         <div style={{ marginBottom: 20 }}>
           <label className="label" htmlFor="update-confirm">Confirmar senha</label>
-          <input
+          <PasswordInput
             id="update-confirm"
-            type="password"
             autoComplete="new-password"
-            className="input"
             placeholder="••••••••"
             {...register("confirmPassword")}
             aria-invalid={!!errors.confirmPassword}

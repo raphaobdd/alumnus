@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema, type LoginInput } from "@/lib/validations/auth";
 import { loginAction } from "@/app/actions/auth";
+import { PasswordInput } from "@/components/ui/PasswordInput";
 import { Loader2 } from "lucide-react";
 
 export default function LoginPage() {
@@ -115,11 +116,9 @@ export default function LoginPage() {
             <label className="label" htmlFor="login-password">
               Senha
             </label>
-            <input
+            <PasswordInput
               id="login-password"
-              type="password"
               autoComplete="current-password"
-              className="input"
               placeholder="••••••••"
               {...register("password")}
               aria-invalid={!!errors.password}
