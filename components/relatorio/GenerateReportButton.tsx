@@ -1,28 +1,35 @@
 "use client";
 
 import { useTransition } from "react";
-import { generateTodayReportAction } from "@/app/actions/reports";
+import { generateReportAction } from "@/app/actions/reports";
 import { toast } from "sonner";
 import { RefreshCw, Loader2 } from "lucide-react";
 
-export function GenerateReportButton({ hasReportToday }: { hasReportToday: boolean }) {
+interface GenerateReportButtonProps {
+  hasReport: boolean;
+  periodType?: "daily" | "weekly" | "monthly";
+}
+
+export function GenerateReportButton({ hasReport, periodType = "daily" }: GenerateReportButtonProps) {
   const [isPending, startTransition] = useTransition();
+
+  const periodLabel = periodType === "monthly" ? "Mensal" : periodType === "weekly" ? "Semanal" : "do Dia";
 
   const handleGenerate = () => {
     startTransition(async () => {
-      const result = await generateTodayReportAction();
+      const result = await generateReportAction(periodType);
       if (result.error) {
         toast.error(result.error);
       } else {
-        toast.success(hasReportToday ? "Relatório diário atualizado!" : "Relatório diário gerado!");
+        toast.success(hasReport ? `Relatório ${periodLabel} atualizado!` : `Relatório ${periodLabel} gerado!`);
       }
     });
   };
 
   return (
     <button
-      id="generate-report-btn"
-      className={hasReportToday ? "btn btn-secondary" : "btn btn-accent"}
+      id={`generate-report-btn-${periodType}`}
+      className={hasReport ? "btn btn-secondary" : "btn btn-accent"}
       onClick={handleGenerate}
       disabled={isPending}
     >
@@ -34,7 +41,7 @@ export function GenerateReportButton({ hasReportToday }: { hasReportToday: boole
       ) : (
         <>
           <RefreshCw size={16} />
-          {hasReportToday ? "Atualizar Relatório do Dia" : "Gerar Relatório Diário Agora"}
+          {hasReport ? `Atualizar Relatório ${periodLabel}` : `Gerar Relatório ${periodLabel}`}
         </>
       )}
     </button>

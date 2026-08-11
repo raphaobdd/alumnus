@@ -243,6 +243,7 @@ export interface Database {
           id: string;
           user_id: string;
           report_date: string;
+          period_type: "daily" | "weekly" | "monthly";
           signals_snapshot: Json;
           report_text: string;
           risk_level: "none" | "attention" | "high";
@@ -252,6 +253,7 @@ export interface Database {
           id?: string;
           user_id: string;
           report_date: string;
+          period_type?: "daily" | "weekly" | "monthly";
           signals_snapshot: Json;
           report_text: string;
           risk_level?: "none" | "attention" | "high";
@@ -259,6 +261,7 @@ export interface Database {
         };
         Update: {
           report_date?: string;
+          period_type?: "daily" | "weekly" | "monthly";
           signals_snapshot?: Json;
           report_text?: string;
           risk_level?: "none" | "attention" | "high";
