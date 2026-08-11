@@ -11,14 +11,15 @@ import {
   LayoutDashboard,
   Sun,
   Moon,
-  Sparkles,
+  TrendingUp,
   Calendar,
   ShieldCheck,
+  Menu,
   type LucideIcon,
 } from "lucide-react";
 
 const ROUTE_CONFIG: Record<string, { title: string; icon: LucideIcon }> = {
-  "/relatorio":  { title: "Inteligência Diária",       icon: Sparkles },
+  "/relatorio":  { title: "Painel & Resumo",           icon: TrendingUp },
   "/calendario": { title: "Calendário de Datas",       icon: Calendar },
   "/notas":      { title: "Notas & Boletim",           icon: BarChart3 },
   "/tarefas":    { title: "Tarefas",                    icon: CheckSquare },
@@ -26,7 +27,11 @@ const ROUTE_CONFIG: Record<string, { title: string; icon: LucideIcon }> = {
   "/rotina":     { title: "Grade de Horários",          icon: Clock },
 };
 
-export function Header() {
+interface HeaderProps {
+  onMenuToggle?: () => void;
+}
+
+export function Header({ onMenuToggle }: HeaderProps) {
   const pathname = usePathname();
   const [isDark, setIsDark] = useState(false);
   const [isMfaOpen, setIsMfaOpen] = useState(false);
@@ -62,6 +67,23 @@ export function Header() {
           position: sticky;
           top: 0;
           z-index: 50;
+        }
+        .header-left {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+        }
+        .menu-toggle-btn {
+          display: none;
+          width: 36px;
+          height: 36px;
+          border-radius: var(--radius-sm);
+          background: var(--surface-2);
+          border: 1px solid var(--border);
+          color: var(--text-primary);
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
         }
         .header-title {
           display: flex;
@@ -104,14 +126,33 @@ export function Header() {
           color: var(--text-primary);
           transform: scale(1.03);
         }
+        @media (max-width: 768px) {
+          .header {
+            padding: 0 16px;
+          }
+          .menu-toggle-btn {
+            display: flex;
+          }
+        }
       `}</style>
 
       <header className="header">
-        <div className="header-title">
-          <div className="header-title-icon-wrapper">
-            <Icon size={18} />
+        <div className="header-left">
+          <button
+            className="menu-toggle-btn"
+            onClick={onMenuToggle}
+            aria-label="Abrir menu principal"
+            title="Abrir menu"
+          >
+            <Menu size={20} />
+          </button>
+
+          <div className="header-title">
+            <div className="header-title-icon-wrapper">
+              <Icon size={18} />
+            </div>
+            <span>{title}</span>
           </div>
-          <span>{title}</span>
         </div>
 
         <div className="header-actions">

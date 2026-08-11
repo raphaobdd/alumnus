@@ -6,7 +6,7 @@ import { AddSubjectForm } from "@/components/notas/AddSubjectForm";
 import type { SubjectWithStats } from "@/types/database";
 import { BookOpen } from "lucide-react";
 
-export const metadata: Metadata = { title: "Notas | AcadêmicoApp" };
+export const metadata: Metadata = { title: "Notas & Boletim" };
 
 export default async function NotasPage() {
   const { supabase, user } = await getAuthenticatedUser();

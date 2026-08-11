@@ -156,3 +156,71 @@ export async function updatePasswordAction(
   revalidatePath("/", "layout");
   redirect("/notas");
 }
+
+// ============================================================
+// UPDATE PROFILE
+// ============================================================
+export async function updateProfileAction(fullName: string): Promise<ActionResult> {
+  if (!fullName || fullName.trim().length === 0) {
+    return { error: "Nome completo é obrigatório." };
+  }
+
+  const supabase = await createClient();
+  const { error } = await supabase.auth.updateUser({
+    data: { full_name: fullName.trim() },
+  });
+
+  if (error) {
+    return { error: "Erro ao atualizar perfil." };
+  }
+
+  revalidatePath("/", "layout");
+  return { data: null };
+}
+
+// ============================================================
+// EXPORT USER DATA
+// ============================================================
+export async function exportUserDataAction(): Promise<ActionResult<string>> {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { error: "Não autenticado." };
+  }
+
+  const [
+    { data: subjects },
+    { data: grades },
+    { data: tasks },
+    { data: attendance },
+    { data: importantDates },
+    { data: schedule },
+  ] = await Promise.all([
+    supabase.from("subjects").select("*").eq("user_id", user.id),
+    supabase.from("grades").select("*").eq("user_id", user.id),
+    supabase.from("tasks").select("*").eq("user_id", user.id),
+    supabase.from("attendance").select("*").eq("user_id", user.id),
+    supabase.from("important_dates").select("*").eq("user_id", user.id),
+    supabase.from("schedule").select("*").eq("user_id", user.id),
+  ]);
+
+  const exportPayload = {
+    exportedAt: new Date().toISOString(),
+    user: {
+      id: user.id,
+      email: user.email,
+      fullName: user.user_metadata?.full_name,
+    },
+    data: {
+      subjects: subjects ?? [],
+      grades: grades ?? [],
+      tasks: tasks ?? [],
+      attendance: attendance ?? [],
+      importantDates: importantDates ?? [],
+      schedule: schedule ?? [],
+    },
+  };
+
+  return { data: JSON.stringify(exportPayload, null, 2) };
+}

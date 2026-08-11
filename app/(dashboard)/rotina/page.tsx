@@ -5,7 +5,7 @@ import { AddScheduleForm } from "@/components/rotina/AddScheduleForm";
 import { SemesterSetupModal } from "@/components/semestre/SemesterSetupModal";
 import type { ScheduleWithSubject } from "@/types/database";
 
-export const metadata: Metadata = { title: "Grade de Horários | AcadêmicoApp" };
+export const metadata: Metadata = { title: "Grade de Horários" };
 
 export default async function RotinaPage() {
   const { supabase } = await getAuthenticatedUser();

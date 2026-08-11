@@ -4,7 +4,7 @@ import { ImportantDatesCalendar } from "@/components/calendario/ImportantDatesCa
 import { AddImportantDateForm } from "@/components/calendario/AddImportantDateForm";
 import type { ImportantDateWithSubject } from "@/types/database";
 
-export const metadata: Metadata = { title: "Calendário de Datas Importantes | AcadêmicoApp" };
+export const metadata: Metadata = { title: "Calendário de Datas" };
 
 export default async function CalendarioPage() {
   const { supabase, user } = await getAuthenticatedUser();

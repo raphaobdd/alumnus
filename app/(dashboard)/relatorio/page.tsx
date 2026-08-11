@@ -18,7 +18,7 @@ import {
   Zap,
 } from "lucide-react";
 
-export const metadata: Metadata = { title: "Relatório de Inteligência | AcadêmicoApp" };
+export const metadata: Metadata = { title: "Painel & Resumo" };
 
 interface PageProps {
   searchParams?: Promise<{ period?: string }>;

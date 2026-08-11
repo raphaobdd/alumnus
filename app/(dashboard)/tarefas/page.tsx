@@ -5,7 +5,7 @@ import { AddTaskForm } from "@/components/tarefas/AddTaskForm";
 import type { TaskWithSubject, Subject, Grade } from "@/types/database";
 import { AlertTriangle } from "lucide-react";
 
-export const metadata: Metadata = { title: "Tarefas | AcadêmicoApp" };
+export const metadata: Metadata = { title: "Tarefas" };
 
 export default async function TarefasPage() {
   const { supabase } = await getAuthenticatedUser();

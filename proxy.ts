@@ -106,12 +106,14 @@ export async function proxy(request: NextRequest) {
   );
 
   const isProtectedRoute =
+    pathname === "/" ||
     pathname.startsWith("/notas") ||
     pathname.startsWith("/tarefas") ||
     pathname.startsWith("/presencas") ||
     pathname.startsWith("/rotina") ||
     pathname.startsWith("/relatorio") ||
-    pathname.startsWith("/calendario");
+    pathname.startsWith("/calendario") ||
+    pathname.startsWith("/perfil");
 
   const isPublicAuthRoute =
     pathname === "/login" ||

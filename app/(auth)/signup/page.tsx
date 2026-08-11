@@ -56,7 +56,7 @@ export default function SignupPage() {
           Verifique seu e-mail
         </h2>
         <p style={{ color: "var(--text-secondary)", marginBottom: 24, lineHeight: 1.6 }}>
-          Enviamos um link de confirmação para seu e-mail. Clique no link para ativar sua conta e começar a usar o AcadêmicoApp.
+          Enviamos um link de confirmação para seu e-mail. Clique no link para ativar sua conta e começar a usar o Alumnus.
         </p>
         <Link href="/login" className="btn btn-primary" style={{ display: "inline-flex" }}>
           Ir para o login

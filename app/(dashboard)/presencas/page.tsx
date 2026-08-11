@@ -7,7 +7,7 @@ import { SemesterSetupModal } from "@/components/semestre/SemesterSetupModal";
 import type { Subject, Attendance } from "@/types/database";
 import { CalendarCheck, AlertTriangle, AlertOctagon, CheckCircle2, Minus, X, Check } from "lucide-react";
 
-export const metadata: Metadata = { title: "Presenças & Faltas | AcadêmicoApp" };
+export const metadata: Metadata = { title: "Presenças & Faltas" };
 
 export default async function PresencasPage() {
   const { supabase } = await getAuthenticatedUser();

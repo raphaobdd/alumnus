@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { logoutAction } from "@/app/actions/auth";
-import { useTransition } from "react";
+import { useTransition, useEffect } from "react";
 import {
   GraduationCap,
   BarChart3,
@@ -12,12 +12,13 @@ import {
   Clock,
   LogOut,
   Loader2,
-  Sparkles,
+  TrendingUp,
   Calendar,
+  X,
 } from "lucide-react";
 
 const NAV_ITEMS = [
-  { href: "/relatorio",  icon: Sparkles,      label: "Inteligência", id: "nav-relatorio" },
+  { href: "/relatorio",  icon: TrendingUp,    label: "Painel",       id: "nav-relatorio" },
   { href: "/calendario", icon: Calendar,      label: "Calendário",   id: "nav-calendario" },
   { href: "/notas",      icon: BarChart3,     label: "Notas",        id: "nav-notas" },
   { href: "/tarefas",    icon: CheckSquare,   label: "Tarefas",      id: "nav-tarefas" },
@@ -28,11 +29,19 @@ const NAV_ITEMS = [
 interface SidebarProps {
   userEmail?: string;
   userName?: string;
+  isOpen?: boolean;
+  onClose?: () => void;
 }
 
-export function Sidebar({ userEmail, userName }: SidebarProps) {
+export function Sidebar({ userEmail, userName, isOpen, onClose }: SidebarProps) {
   const pathname = usePathname();
   const [isPending, startTransition] = useTransition();
+
+  useEffect(() => {
+    if (isOpen && onClose) {
+      onClose();
+    }
+  }, [pathname]);
 
   const handleLogout = () => {
     startTransition(async () => {
@@ -56,12 +65,27 @@ export function Sidebar({ userEmail, userName }: SidebarProps) {
           z-index: 100;
           transition: transform var(--transition-slow);
         }
+        .sidebar-backdrop {
+          display: none;
+          position: fixed;
+          inset: 0;
+          background: rgba(15, 23, 42, 0.5);
+          backdrop-filter: blur(4px);
+          z-index: 99;
+          opacity: 0;
+          transition: opacity var(--transition-slow);
+        }
         .sidebar-logo {
           padding: 20px 20px 16px;
           display: flex;
           align-items: center;
-          gap: 10px;
+          justify-content: space-between;
           border-bottom: 1px solid var(--border);
+        }
+        .sidebar-logo-brand {
+          display: flex;
+          align-items: center;
+          gap: 10px;
         }
         .sidebar-logo-icon {
           width: 36px;
@@ -75,10 +99,19 @@ export function Sidebar({ userEmail, userName }: SidebarProps) {
           flex-shrink: 0;
         }
         .sidebar-logo-text {
-          font-size: 15px;
+          font-size: 16px;
           font-weight: 700;
           color: var(--text-primary);
           letter-spacing: -0.01em;
+        }
+        .sidebar-close-btn {
+          display: none;
+          background: transparent;
+          border: none;
+          color: var(--text-secondary);
+          padding: 6px;
+          border-radius: var(--radius-sm);
+          cursor: pointer;
         }
         .sidebar-nav {
           flex: 1;
@@ -184,15 +217,49 @@ export function Sidebar({ userEmail, userName }: SidebarProps) {
         .logout-btn .nav-icon {
           color: var(--danger);
         }
+
+        @media (max-width: 768px) {
+          .sidebar {
+            transform: translateX(-100%);
+          }
+          .sidebar.open {
+            transform: translateX(0);
+          }
+          .sidebar-backdrop.open {
+            display: block;
+            opacity: 1;
+          }
+          .sidebar-close-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          }
+        }
       `}</style>
 
-      <aside className="sidebar" aria-label="Navegação principal">
+      {/* Overlay mobile */}
+      <div
+        className={`sidebar-backdrop ${isOpen ? "open" : ""}`}
+        onClick={onClose}
+        aria-hidden="true"
+      />
+
+      <aside className={`sidebar ${isOpen ? "open" : ""}`} aria-label="Navegação principal">
         {/* Logo */}
         <div className="sidebar-logo">
-          <div className="sidebar-logo-icon">
-            <GraduationCap size={20} />
+          <div className="sidebar-logo-brand">
+            <div className="sidebar-logo-icon">
+              <GraduationCap size={20} />
+            </div>
+            <span className="sidebar-logo-text">Alumnus</span>
           </div>
-          <span className="sidebar-logo-text">Alumnus</span>
+          <button
+            className="sidebar-close-btn"
+            onClick={onClose}
+            aria-label="Fechar menu"
+          >
+            <X size={20} />
+          </button>
         </div>
 
         {/* Navegação */}
@@ -217,7 +284,7 @@ export function Sidebar({ userEmail, userName }: SidebarProps) {
 
         {/* Footer / Usuário */}
         <div className="sidebar-footer">
-          <div className="sidebar-user">
+          <Link href="/perfil" className="sidebar-user hover:opacity-90 transition-opacity" style={{ textDecoration: "none" }}>
             <div className="user-avatar" aria-hidden="true">
               {(userName || userEmail || "U")[0].toUpperCase()}
             </div>
@@ -225,7 +292,7 @@ export function Sidebar({ userEmail, userName }: SidebarProps) {
               <div className="user-name">{userName || "Usuário"}</div>
               <div className="user-email">{userEmail}</div>
             </div>
-          </div>
+          </Link>
 
           <button
             id="sidebar-logout"

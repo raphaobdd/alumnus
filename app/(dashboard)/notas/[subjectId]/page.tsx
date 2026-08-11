@@ -18,7 +18,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     .select("name")
     .eq("id", subjectId)
     .single();
-  return { title: `${subject?.name ?? "Matéria"} | AcadêmicoApp` };
+  return { title: subject?.name ?? "Matéria" };
 }
 
 export default async function SubjectPage({ params }: Props) {
