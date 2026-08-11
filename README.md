@@ -1,121 +1,136 @@
-# Sistema de Organização Acadêmica
+# 🎓 Alumnus — Plataforma de Gestão e Inteligência Acadêmica
 
-Sistema web multi-usuário para estudantes universitários organizarem notas, tarefas, presenças e rotina de aulas.
+> **Alumnus** é uma solução web moderna, inteligente e de alto desempenho projetada para estudantes universitários organizarem notas, presenças, tarefas, grade semanal e calendário acadêmico em um só lugar.
 
-## Stack
+---
 
-- **Next.js 15** (App Router) + **TypeScript**
-- **Tailwind CSS v3**
-- **Supabase** (PostgreSQL + Auth + Realtime + RLS)
-- **Zod** para validação de schemas
-- **React Hook Form** com resolver Zod
+## 🚀 Principais Funcionalidades
 
-## Setup Inicial
+### 🪄 Assistente de Semestre Completo (Wizard em 3 Passos)
+- **Passo 1 — Período**: Configuração do semestre (ex: `2026.1`) e datas oficiais de início e término das aulas.
+- **Passo 2 — Matérias**: Inserção manual e personalização de disciplinas (Professor, Limite de Faltas e Cor).
+- **Passo 3 — Grade Horária**: Organização dos horários semanais com salvamento unificado em 1 clique.
 
-### 1. Clone e instale dependências
+### 🧠 Relatório Diário de Inteligência
+- Geração diária de diagnósticos acadêmicos com recomendações de estudo.
+- Notificações de incentivo e alertas como: *"Ajuste seu calendário! Se organize antes das suas aulas voltarem."*
+
+### 📊 Gestão de Notas & Boletim
+- Divisão de avaliações configurável em **Porcentagem (%)** (ex: *Prova 1: 30%*, *Prova 2: 35%*, *Trabalho: 35%* = `100%`).
+- Conversão decimal automática para cálculo de média ponderada exata (`0.3`, `0.35`, `0.35`).
+- **Sincronização com o Calendário**: Ao salvar uma prova ou entrega com data, o evento é cadastrado automaticamente no Calendário.
+
+### 🎯 Tarefas com Prioridade 100% Automática
+- **Vínculo com Avaliações**: Associe tarefas diretamente à parte da nota da matéria.
+- **Prioridade Inteligente**: Calculada automaticamente em tempo real combinando o prazo de entrega e o peso da nota:
+  - 🔥 **Alta**: Entrega em menos de 48h ou avaliação $\ge 30\%$ da nota.
+  - ⚡ **Média**: Entrega nesta semana (até 7 dias) ou avaliação $\ge 15\%$ da nota.
+  - 🌱 **Baixa**: Prazos distantes sem peso elevado.
+
+### 📅 Calendário Unificado & Controle de Presenças
+- **Filtro de Aulas do Dia**: Ao selecionar uma data, o calendário exibe apenas as matérias com aula agendada para aquele dia da semana.
+- **Presença Padrão em Aulas Sem Chamada**: Aulas marcadas como *"Sem chamada"* mantêm a presença computada por padrão ($100\%$ de frequência), sem penalizar o aluno.
+- **Indicador de Porcentagem de Frequência (%)**: Barra visual com cores indicativas (Verde $\ge 75\%$, Amarelo $< 75\%$, Vermelho $< 70\%$).
+
+---
+
+## 🛠️ Stack Tecnológica
+
+| Camada | Tecnologia |
+|---|---|
+| **Framework Web** | Next.js 16 (App Router + Turbopack) |
+| **Linguagem** | TypeScript 5 |
+| **Interface & Estilos** | Vanilla CSS (Tokens HSL, Dark Mode, Glassmorphism) + Lucide Icons |
+| **Backend & Banco** | Supabase (PostgreSQL + Auth + RLS + Realtime) |
+| **Formulários & Schemas** | React Hook Form + Zod |
+| **Notificações** | Sonner Toast |
+
+---
+
+## 📦 Instalação e Execução Local
+
+### 1. Clonar o repositório e instalar dependências
 
 ```bash
+git clone https://github.com/raphaobdd/alumnus.git
+cd alumnus
 npm install
 ```
 
-### 2. Configure as variáveis de ambiente
+### 2. Configurar Variáveis de Ambiente
 
-Copie `.env.example` para `.env.local`:
+Copie o arquivo de exemplo `.env.example` para `.env.local`:
 
 ```bash
 cp .env.example .env.local
 ```
 
-Preencha com as chaves do seu projeto Supabase (veja seção abaixo).
+Preencha as variáveis de ambiente com as credenciais do seu projeto Supabase:
 
-### 3. Configure o Supabase
+```env
+NEXT_PUBLIC_SUPABASE_URL=https://seu-projeto.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=sua-chave-anonima
+SUPABASE_SERVICE_ROLE_KEY=sua-chave-service-role
+```
 
-#### 3.1 Crie um projeto em [supabase.com](https://supabase.com)
+> ⚠️ **Segurança:** O arquivo `.env.example` é o único versionado no Git (`.gitignore`). Nunca commite `.env.local`.
 
-#### 3.2 Aplique o schema SQL
+### 3. Configurar o Banco de Dados (Supabase)
 
-No painel do Supabase, vá em **SQL Editor** e execute os arquivos **nesta ordem**:
+No painel do Supabase em **SQL Editor**, execute os scripts SQL localizados na pasta `/supabase` na seguinte ordem:
 
-1. `supabase/schema.sql` — cria tabelas, índices e triggers
-2. `supabase/rls.sql` — habilita RLS e cria todas as policies
+1. `supabase/schema.sql` — Criação das tabelas fundamentais e índices.
+2. `supabase/rls.sql` — Habilitação de Row Level Security (RLS) e políticas de acesso.
+3. `supabase/schema_features.sql` — Funcionalidades adicionais (relatórios diários de inteligência e audit logs).
 
-> ⚠️ Execute os arquivos separadamente. O `rls.sql` depende das tabelas do `schema.sql`.
-
-#### 3.3 (Opcional) Dados de exemplo
-
-Em `supabase/seed.sql`, substitua `'<SEU_USER_ID>'` pelo UUID do seu usuário de teste (encontrado em **Authentication → Users** no painel do Supabase) e execute o arquivo.
-
-#### 3.4 Copie as chaves de API
-
-No painel do Supabase, vá em **Settings → API**:
-
-| Chave | Onde usar |
-|---|---|
-| Project URL | `NEXT_PUBLIC_SUPABASE_URL` |
-| anon/public | `NEXT_PUBLIC_SUPABASE_ANON_KEY` |
-| service_role | `SUPABASE_SERVICE_ROLE_KEY` |
-
-> ⚠️ **NUNCA** commite `.env.local` no Git. A `service_role` key dá acesso irrestrito ao banco — use-a apenas no servidor.
-
-#### 3.5 Configure a URL de redirecionamento (Auth)
-
-Em **Authentication → URL Configuration**:
-- **Site URL**: `http://localhost:3000` (dev) ou sua URL de produção
-- **Redirect URLs**: adicione `http://localhost:3000/auth/callback`
-
-### 4. Execute o servidor de desenvolvimento
+### 4. Iniciar o Servidor de Desenvolvimento
 
 ```bash
 npm run dev
 ```
 
-Acesse [http://localhost:3000](http://localhost:3000).
+Acesse a aplicação em **`http://localhost:3000`**.
 
 ---
 
-## Estrutura do Projeto
+## 📂 Estrutura de Pastas
 
+```text
+projeto_alunos/
+├── app/
+│   ├── (auth)/                # Telas de Login, Cadastro e Recuperação de Senha
+│   ├── (dashboard)/           # Módulos principais (Notas, Tarefas, Presenças, Rotina, Calendário, Relatório)
+│   ├── actions/               # Server Actions para mutação de dados
+│   ├── api/                   # Handlers de API e cron jobs
+│   └── layout.tsx             # Layout raiz e metadados globais
+├── components/
+│   ├── calendario/            # Componentes do Calendário de eventos
+│   ├── layout/                # Sidebar e Header de navegação
+│   ├── notas/                 # Módulo de Notas, Boletim e Cadastro de Avaliações
+│   ├── presencas/             # Calendário Unificado e Consulta de Frequência (%)
+│   ├── relatorio/             # Relatório de Inteligência Acadêmica
+│   ├── rotina/                # Grade semanal de horários interativa
+│   ├── semestre/              # Assistente de Cadastro de Semestre Completo
+│   └── tarefas/               # Quadro de Tarefas e Calculadora de Prioridade
+├── lib/
+│   ├── intelligence/          # Motor de inteligência e diagnóstico diário
+│   ├── supabase/              # Clientes de conexão Supabase (SSR & Browser)
+│   └── validations/           # Schemas de validação Zod
+├── supabase/                  # Scripts SQL (schema, rls, seed, features)
+└── types/                     # Interfaces TypeScript derivadas do banco
 ```
-/app
-  /(auth)/login          → Página de login
-  /(auth)/signup         → Cadastro de conta
-  /(auth)/forgot-password → Recuperação de senha
-  /(auth)/update-password → Redefinição de senha
-  /(dashboard)/notas     → Módulo de notas e boletim
-  /(dashboard)/tarefas   → Módulo de tarefas
-  /(dashboard)/presencas → Módulo de presenças/faltas
-  /(dashboard)/rotina    → Grade de horários semanal
-  /auth/callback         → Callback OAuth/e-mail
-/components
-  /layout                → Sidebar, Header
-  /ui                    → Componentes base (shadcn/ui)
-  /notas                 → Componentes do módulo Notas
-  /tarefas               → Componentes do módulo Tarefas
-  /presencas             → Componentes do módulo Presenças
-  /rotina                → Componentes do módulo Rotina
-/lib
-  /supabase              → client.ts, server.ts
-  /validations           → schemas Zod
-/app/actions             → Server Actions
-/supabase                → schema.sql, rls.sql, seed.sql
-/types                   → TypeScript types
-```
 
-## Segurança
+---
 
-- **RLS em todas as tabelas**: cada usuário acessa apenas seus próprios dados, garantido no banco de dados
-- **Server Actions**: toda mutação passa pelo servidor — nunca executada apenas no client
-- **Zod**: validação de schema em toda entrada de dados
-- **Variáveis sensíveis**: `service_role` key apenas server-side (sem `NEXT_PUBLIC_` prefix)
-- **Rate limiting**: middleware bloqueia abuso em endpoints de auth
-- **Headers de segurança**: X-Frame-Options, Content-Type-Options, CSP e outros
-- **Audit logs**: ações críticas (delete, mudança de senha) registradas na tabela `audit_logs`
+## 🛡️ Segurança e Boas Práticas
 
-## Scripts
+- **Row Level Security (RLS)**: Todas as tabelas no PostgreSQL possuem políticas ativas garantindo isolamento total entre usuários.
+- **Server Actions Scoped**: Operações no banco são executadas no servidor com verificação de sessão autenticada.
+- **Validação Estrita de Schemas**: Validação com Zod em todas as entradas de dados do usuário.
+- **Auditoria**: Ações críticas de exclusão e alterações registradas em tabela de auditoria (`audit_logs`).
 
-```bash
-npm run dev      # Servidor de desenvolvimento
-npm run build    # Build de produção
-npm run start    # Servidor de produção
-npm run lint     # Linting com ESLint
-```
+---
+
+## 📜 Licença
+
+Este projeto está sob a licença **MIT**. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
