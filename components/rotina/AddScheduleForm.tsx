@@ -29,10 +29,11 @@ export function AddScheduleForm({
   initialEndTime,
   onClose,
 }: AddScheduleFormProps) {
-  const [open, setOpen] = useState(!!initialData || initialWeekday !== undefined);
+  const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
 
   const isEditing = !!initialData;
+  const isOpen = open || isEditing || initialWeekday !== undefined;
 
   const { register, handleSubmit, reset, setValue, formState: { errors } } = useForm<ScheduleFormValues>({
     resolver: zodResolver(scheduleSchema),
@@ -47,14 +48,15 @@ export function AddScheduleForm({
 
   useEffect(() => {
     if (initialData || initialWeekday !== undefined) {
-      setOpen(true);
-      setValue("weekday", initialData?.weekday ?? initialWeekday ?? 1);
-      setValue("subject_name", initialData?.subjects.name || "");
-      setValue("start_time", initialData?.start_time.slice(0, 5) || initialStartTime || "08:00");
-      setValue("end_time", initialData?.end_time.slice(0, 5) || initialEndTime || "09:00");
-      setValue("room", initialData?.room || "");
+      reset({
+        weekday: initialData?.weekday ?? initialWeekday ?? 1,
+        subject_name: initialData?.subjects.name || "",
+        start_time: initialData?.start_time.slice(0, 5) || initialStartTime || "08:00",
+        end_time: initialData?.end_time.slice(0, 5) || initialEndTime || "09:00",
+        room: initialData?.room || "",
+      });
     }
-  }, [initialData, initialWeekday, initialStartTime, initialEndTime, setValue]);
+  }, [initialData, initialWeekday, initialStartTime, initialEndTime, reset]);
 
   const handleClose = () => {
     setOpen(false);
@@ -83,7 +85,7 @@ export function AddScheduleForm({
     });
   };
 
-  if (!open && !isEditing && initialWeekday === undefined) {
+  if (!isOpen) {
     return (
       <button id="add-schedule-btn" className="btn btn-primary" onClick={() => setOpen(true)}>
         <Plus size={16} />
@@ -91,8 +93,6 @@ export function AddScheduleForm({
       </button>
     );
   }
-
-  if (!open) return null;
 
   return (
     <div

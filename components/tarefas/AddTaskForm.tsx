@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useTransition, useEffect } from "react";
+import { useState, useTransition, useEffect, useMemo } from "react";
 import { createPortal } from "react-dom";
 import { createTaskAction } from "@/app/actions/tasks";
 import { toast } from "sonner";
 import type { Subject, Grade } from "@/types/database";
-import { Plus, Loader2, X, Sparkles, Clock, ShieldAlert } from "lucide-react";
+import { Plus, Loader2, X, Sparkles } from "lucide-react";
 
 interface AddTaskFormProps {
   subjects: Pick<Subject, "id" | "name" | "color">[];
@@ -26,28 +26,26 @@ export function AddTaskForm({ subjects, grades = [] }: AddTaskFormProps) {
   const [subjectId, setSubjectId] = useState("");
   const [gradeId, setGradeId] = useState("");
   const [dueDate, setDueDate] = useState("");
-  const [priority, setPriority] = useState<"low" | "medium" | "high">("low");
-  const [priorityReason, setPriorityReason] = useState("");
 
   // Matéria selecionada e suas avaliações correspondentes
   const subjectGrades = grades.filter((g) => g.subject_id === subjectId);
 
   // Recalcular a prioridade 100% AUTOMATICAMENTE quando a data de entrega ou avaliação muda
-  useEffect(() => {
+  const { priority, priorityReason } = useMemo(() => {
     let calculatedPriority: "low" | "medium" | "high" = "low";
-    let reasons: string[] = [];
+    const reasons: string[] = [];
 
     // 1. Cálculo por Prazo
     if (dueDate) {
       const dueTimestamp = new Date(dueDate).getTime();
-      const nowTimestamp = Date.now();
+      const nowTimestamp = new Date().getTime();
       const diffDays = (dueTimestamp - nowTimestamp) / (1000 * 60 * 60 * 24);
 
       if (diffDays <= 2) {
         calculatedPriority = "high";
         reasons.push(diffDays < 0 ? "Prazo vencido" : "Entrega em menos de 48h");
       } else if (diffDays <= 7) {
-        if ((calculatedPriority as string) !== "high") calculatedPriority = "medium";
+        calculatedPriority = "medium";
         reasons.push("Entrega nesta semana");
       } else {
         reasons.push("Prazo com mais de 7 dias");
@@ -63,7 +61,7 @@ export function AddTaskForm({ subjects, grades = [] }: AddTaskFormProps) {
           calculatedPriority = "high";
           reasons.push(`Vale ${pct}% da nota final`);
         } else if (pct >= 15) {
-          if ((calculatedPriority as string) !== "high") calculatedPriority = "medium";
+          if (calculatedPriority === "low") calculatedPriority = "medium";
           reasons.push(`Vale ${pct}% da nota final`);
         } else {
           reasons.push(`Vale ${pct}% da nota`);
@@ -71,9 +69,11 @@ export function AddTaskForm({ subjects, grades = [] }: AddTaskFormProps) {
       }
     }
 
-    setPriority(calculatedPriority);
-    setPriorityReason(reasons.length > 0 ? reasons.join(" • ") : "Definida por padrão");
-  }, [dueDate, gradeId, subjectId, grades]);
+    return {
+      priority: calculatedPriority,
+      priorityReason: reasons.length > 0 ? reasons.join(" • ") : "Definida por padrão",
+    };
+  }, [dueDate, gradeId, grades]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

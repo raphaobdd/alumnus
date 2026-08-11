@@ -37,6 +37,29 @@ function isUrgent(dueDate: string | null, status: string) {
   return (new Date(dueDate).getTime() - Date.now()) / 86400000 <= 2;
 }
 
+function renderDueBadge(dueDateStr: string | null) {
+  if (!dueDateStr) return null;
+  const dueMs = new Date(dueDateStr).getTime();
+  const nowMs = new Date().getTime();
+  const daysLeft = (dueMs - nowMs) / 86400000;
+  const cls = daysLeft < 0 ? "overdue" : daysLeft <= 2 ? "soon" : "normal";
+  const label =
+    daysLeft < 0
+      ? "Atrasada"
+      : daysLeft <= 1
+      ? "Vence hoje"
+      : daysLeft <= 2
+      ? "Amanhã"
+      : new Date(dueDateStr).toLocaleDateString("pt-BR");
+
+  return (
+    <span className={`task-due ${cls}`}>
+      {daysLeft < 0 && <AlertTriangle size={12} />}
+      {label}
+    </span>
+  );
+}
+
 function TaskCard({ task }: { task: TaskWithSubject }) {
   const [isPending, startTransition] = useTransition();
   const priority = PRIORITY_COLORS[task.priority];
@@ -129,20 +152,7 @@ function TaskCard({ task }: { task: TaskWithSubject }) {
             {priority.label}
           </span>
 
-          {task.due_date && (() => {
-            const daysLeft = (new Date(task.due_date).getTime() - Date.now()) / 86400000;
-            const cls = daysLeft < 0 ? "overdue" : daysLeft <= 2 ? "soon" : "normal";
-            const label = daysLeft < 0 ? "Atrasada" :
-              daysLeft <= 1 ? "Vence hoje" :
-              daysLeft <= 2 ? "Amanhã" :
-              new Date(task.due_date).toLocaleDateString("pt-BR");
-            return (
-              <span className={`task-due ${cls}`}>
-                {daysLeft < 0 && <AlertTriangle size={12} />}
-                {label}
-              </span>
-            );
-          })()}
+          {renderDueBadge(task.due_date)}
         </div>
 
         {task.description && (

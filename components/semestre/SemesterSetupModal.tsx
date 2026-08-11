@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition, useEffect } from "react";
+import { useState, useTransition } from "react";
 import { createSemesterSetupAction, type SemesterSubjectItem } from "@/app/actions/semester";
 import { WEEKDAY_LABELS } from "@/lib/validations/schedule";
 import { toast } from "sonner";
@@ -38,9 +38,7 @@ export function SemesterSetupModal({ forceOpen = false }: SemesterSetupModalProp
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [isPending, startTransition] = useTransition();
 
-  useEffect(() => {
-    if (forceOpen) setOpen(true);
-  }, [forceOpen]);
+  const isOpen = forceOpen || open;
 
   const now = new Date();
   const currentYear = now.getFullYear();
@@ -121,7 +119,7 @@ export function SemesterSetupModal({ forceOpen = false }: SemesterSetupModalProp
     subIdx: number,
     schedIdx: number,
     field: string,
-    val: any
+    val: string | number
   ) => {
     setSubjects((prev) =>
       prev.map((s, i) => {
@@ -173,7 +171,7 @@ export function SemesterSetupModal({ forceOpen = false }: SemesterSetupModalProp
         Cadastrar Semestre
       </button>
 
-      {open && (
+      {isOpen && (
         <div
           style={{
             position: "fixed",

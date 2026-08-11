@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useTransition, useEffect } from "react";
+import React, { useState, useTransition } from "react";
 import { deleteScheduleAction, moveScheduleAction } from "@/app/actions/schedule";
 import { AddScheduleForm } from "./AddScheduleForm";
 import { toast } from "sonner";
@@ -16,9 +16,6 @@ import {
   Plus,
   CalendarDays,
   LayoutGrid,
-  ChevronLeft,
-  ChevronRight,
-  Move,
 } from "lucide-react";
 
 interface WeeklyGridProps {
@@ -31,7 +28,14 @@ const WEEKDAYS_ORDER = [0, 1, 2, 3, 4, 5, 6]; // Dom -> Sáb
 export function WeeklyGrid({ schedule: initialSchedule, subjects }: WeeklyGridProps) {
   const today = new Date().getDay(); // 0=Dom,...,6=Sáb
 
+  const [prevSchedule, setPrevSchedule] = useState(initialSchedule);
   const [items, setItems] = useState<ScheduleWithSubject[]>(initialSchedule);
+
+  if (prevSchedule !== initialSchedule) {
+    setPrevSchedule(initialSchedule);
+    setItems(initialSchedule);
+  }
+
   const [selectedWeekday, setSelectedWeekday] = useState<number>(today);
   const [viewMode, setViewMode] = useState<"day" | "week">("day");
 
@@ -42,10 +46,6 @@ export function WeeklyGrid({ schedule: initialSchedule, subjects }: WeeklyGridPr
   const [addingForDay, setAddingForDay] = useState<number | null>(null);
 
   const [isPending, startTransition] = useTransition();
-
-  useEffect(() => {
-    setItems(initialSchedule);
-  }, [initialSchedule]);
 
   const handleDelete = (id: string, name: string) => {
     if (!confirm(`Remover aula de ${name}?`)) return;

@@ -121,7 +121,7 @@ export function UnifiedAttendanceCalendar({
 
     // Atualização Otimista local
     const updatedRecord: Attendance = {
-      id: existing ? existing.id : `temp-${Date.now()}`,
+      id: existing ? existing.id : `temp-${Math.random().toString(36).substring(2, 9)}`,
       user_id: "",
       subject_id: subjectId,
       date: activeDate,
