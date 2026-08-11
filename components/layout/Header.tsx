@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { MfaSetupModal } from "@/components/auth/MfaSetupModal";
 import {
   BarChart3,
   CheckSquare,
@@ -12,6 +13,7 @@ import {
   Moon,
   Sparkles,
   Calendar,
+  ShieldCheck,
   type LucideIcon,
 } from "lucide-react";
 
@@ -27,6 +29,7 @@ const ROUTE_CONFIG: Record<string, { title: string; icon: LucideIcon }> = {
 export function Header() {
   const pathname = usePathname();
   const [isDark, setIsDark] = useState(false);
+  const [isMfaOpen, setIsMfaOpen] = useState(false);
 
   useEffect(() => {
     setIsDark(document.documentElement.classList.contains("dark"));
@@ -113,6 +116,15 @@ export function Header() {
 
         <div className="header-actions">
           <button
+            className="theme-toggle"
+            onClick={() => setIsMfaOpen(true)}
+            title="Segurança & Autenticação em 2 Etapas (MFA)"
+            aria-label="Segurança e MFA"
+          >
+            <ShieldCheck size={18} />
+          </button>
+
+          <button
             id="theme-toggle"
             className="theme-toggle"
             onClick={toggleDark}
@@ -122,6 +134,8 @@ export function Header() {
             {isDark ? <Sun size={18} /> : <Moon size={18} />}
           </button>
         </div>
+
+        <MfaSetupModal isOpen={isMfaOpen} onClose={() => setIsMfaOpen(false)} />
       </header>
     </>
   );

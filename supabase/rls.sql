@@ -167,6 +167,11 @@ CREATE POLICY "daily_reports: users can update own reports"
   USING (auth.uid() = user_id)
   WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "daily_reports: users can delete own reports" ON public.daily_reports;
+CREATE POLICY "daily_reports: users can delete own reports"
+  ON public.daily_reports FOR DELETE
+  USING (auth.uid() = user_id);
+
 -- =============================================================
 -- RLS: important_dates
 -- =============================================================

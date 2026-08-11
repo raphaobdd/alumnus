@@ -59,13 +59,14 @@ export async function signupAction(input: SignupInput): Promise<ActionResult> {
     };
   }
 
+  const siteUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
   const supabase = await createClient();
   const { error } = await supabase.auth.signUp({
     email: parsed.data.email,
     password: parsed.data.password,
     options: {
       data: { full_name: parsed.data.fullName },
-      emailRedirectTo: `${process.env.NEXT_PUBLIC_SUPABASE_URL?.replace(".supabase.co", "")}/auth/callback`,
+      emailRedirectTo: `${siteUrl}/auth/callback`,
     },
   });
 
@@ -109,11 +110,12 @@ export async function forgotPasswordAction(
     };
   }
 
+  const siteUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
   const supabase = await createClient();
   const { error } = await supabase.auth.resetPasswordForEmail(
     parsed.data.email,
     {
-      redirectTo: `${process.env.NEXT_PUBLIC_SUPABASE_URL}/auth/callback?next=/update-password`,
+      redirectTo: `${siteUrl}/auth/callback?next=/update-password`,
     }
   );
 
